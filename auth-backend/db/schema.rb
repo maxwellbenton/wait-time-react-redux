@@ -10,10 +10,38 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171101132757) do
+ActiveRecord::Schema.define(version: 20180113051055) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "comments", force: :cascade do |t|
+    t.string "feedback"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "store_comments", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "store_id"
+    t.bigint "comment_id"
+    t.bigint "wait_time_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["comment_id"], name: "index_store_comments_on_comment_id"
+    t.index ["store_id"], name: "index_store_comments_on_store_id"
+    t.index ["user_id"], name: "index_store_comments_on_user_id"
+    t.index ["wait_time_id"], name: "index_store_comments_on_wait_time_id"
+  end
+
+  create_table "stores", force: :cascade do |t|
+    t.string "name"
+    t.string "address"
+    t.float "lat"
+    t.float "lng"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "username"
@@ -22,4 +50,20 @@ ActiveRecord::Schema.define(version: 20171101132757) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "wait_times", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "store_id"
+    t.integer "wait_time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id"], name: "index_wait_times_on_store_id"
+    t.index ["user_id"], name: "index_wait_times_on_user_id"
+  end
+
+  add_foreign_key "store_comments", "comments"
+  add_foreign_key "store_comments", "stores"
+  add_foreign_key "store_comments", "users"
+  add_foreign_key "store_comments", "wait_times"
+  add_foreign_key "wait_times", "stores"
+  add_foreign_key "wait_times", "users"
 end
